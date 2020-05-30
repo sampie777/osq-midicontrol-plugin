@@ -1,0 +1,16 @@
+.idea/
+idea/
+*.iml
+*.ipr
+*.iws
+__pycache__
+*.bak
+*.tmp
+target/
+user.properties
+obs-scene-que.properties
+dependency-reduced-pom.xml
+out/
+releases/
+snapshots/
+*.xcf
