@@ -22,9 +22,9 @@ class MidiControlPlugin : DetailPanelBasePlugin {
     override val tabName = "Midi"
 
     var isMidiControlOn: Boolean = true
-    var allMidiDevices = ArrayList<MidiDevice.Info>()
-    private var midiDevice: MidiDevice? = null
-    fun midiDevice() = midiDevice
+    var allMidiDevices = ArrayList<MidiDeviceClass>()
+    private var activeMidiDeviceClass: MidiDeviceClass? = null
+    fun activeMidiDevice() = activeMidiDeviceClass
 
     var calibratingPreviousCommand: Boolean = false
     var calibratingNextCommand: Boolean = false
@@ -33,7 +33,7 @@ class MidiControlPlugin : DetailPanelBasePlugin {
         super.enable()
         MidiControlProperties.writeToFile = true
         MidiControlProperties.load()
-        getAllMidiDevices()
+        getAllMidiDevicesClasses()
     }
 
     override fun disable() {
@@ -47,16 +47,11 @@ class MidiControlPlugin : DetailPanelBasePlugin {
         return DetailPanel(this)
     }
 
-    private fun getAllMidiDevices(): Array<out MidiDevice.Info> {
+    private fun getAllMidiDevicesClasses(): ArrayList<MidiDeviceClass> {
         val midiDevices = MidiSystem.getMidiDeviceInfo()
-        allMidiDevices = midiDevices.toList() as ArrayList<MidiDevice.Info>
+        allMidiDevices = midiDevices.toList().map { MidiDeviceClass(it) } as ArrayList<MidiDeviceClass>
         MidiControlRefreshableRegister.onMidiDevicesUpdated()
-        return midiDevices
-    }
-
-    private fun getMidiDevice(name: String): MidiDevice? {
-        val deviceInfo = getAllMidiDevices().find { deviceInfoToString(it) == name } ?: return null
-        return MidiSystem.getMidiDevice(deviceInfo)
+        return allMidiDevices
     }
 
     /**
@@ -111,20 +106,21 @@ class MidiControlPlugin : DetailPanelBasePlugin {
     }
 
     fun disconnectMidiDevice() {
-        midiDevice?.close()
+        activeMidiDeviceClass?.device?.close()
         MidiControlRefreshableRegister.onMidiDeviceDisconnected()
     }
 
-    fun connectMidiDevice() {
-        midiDevice = getMidiDevice(MidiControlProperties.midiDeviceIdentifier)
+    fun connectMidiDevice(deviceClass: MidiDeviceClass) {
+        MidiControlProperties.midiDeviceIdentifier = deviceClass.id
+        activeMidiDeviceClass = deviceClass
 
-        if (midiDevice == null) {
-            logger.info("Midi device '${MidiControlProperties.midiDeviceIdentifier}' not found")
-            Notifications.add("Midi device '${MidiControlProperties.midiDeviceIdentifier}' not found", "Midi Control")
+        if (deviceClass.device == null) {
+            logger.info("Midi device '${deviceClass.id}' not found")
+            Notifications.add("Midi device '${deviceClass.id}' not found", "Midi Control")
             return
         }
 
-        if (connectToMidiDevice(midiDevice!!)) {
+        if (connectToMidiDevice(deviceClass.device!!)) {
             MidiControlRefreshableRegister.onMidiDeviceConnected()
         } else {
             MidiControlRefreshableRegister.onMidiDeviceDisconnected()
@@ -144,6 +140,6 @@ class MidiControlPlugin : DetailPanelBasePlugin {
     }
 
     fun isConnected(): Boolean {
-        return midiDevice() != null && midiDevice()!!.isOpen
+        return activeMidiDeviceClass != null && activeMidiDeviceClass?.device != null && activeMidiDeviceClass!!.device!!.isOpen
     }
 }

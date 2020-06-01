@@ -13,7 +13,7 @@ import javax.swing.*
 class MidiConnectionPanel(private val plugin: MidiControlPlugin) : JPanel(), MidiControlRefreshable {
     private val logger = Logger.getLogger(MidiConnectionPanel::class.java.name)
 
-    private val devicesComboBox = JComboBox<MidiDevice.Info>()
+    private val devicesComboBox = JComboBox<MidiDeviceClass>()
     private val connectButton = JButton()
 
     init {
@@ -34,20 +34,13 @@ class MidiConnectionPanel(private val plugin: MidiControlPlugin) : JPanel(), Mid
         devicesComboBox.border = BorderFactory.createLineBorder(Theme.get.BORDER_COLOR)
         devicesComboBox.renderer = DevicesComboboxRenderer()
         devicesComboBox.preferredSize = Dimension(200, 20)
-        devicesComboBox.addActionListener {
-            if (devicesComboBox.selectedItem == null) {
-                return@addActionListener
-            }
-            MidiControlProperties.midiDeviceIdentifier =
-                deviceInfoToString(devicesComboBox.selectedItem as MidiDevice.Info)
-        }
 
         add(connectButton, BorderLayout.LINE_END)
         connectButton.addActionListener { toggleMidiConnection() }
     }
 
     private fun refreshDevicesComboBox() {
-        devicesComboBox.model = DefaultComboBoxModel(plugin.allMidiDevices.toTypedArray())
+        devicesComboBox.model = MidiDevicesComboBoxModel(plugin.allMidiDevices.toTypedArray())
     }
 
     private fun refreshConnectButtonText() {
@@ -67,35 +60,15 @@ class MidiConnectionPanel(private val plugin: MidiControlPlugin) : JPanel(), Mid
                 return
             }
 
-            MidiControlProperties.midiDeviceIdentifier =
-                deviceInfoToString(selectedDevice as MidiDevice.Info)
-
             connectButton.text = "Connecting..."
-            plugin.connectMidiDevice()
+            plugin.connectMidiDevice(selectedDevice as MidiDeviceClass)
         }
     }
 
     private fun setDevicesComboBoxToCurrentDevice() {
-        if (plugin.midiDevice() == null && MidiControlProperties.midiDeviceIdentifier.isEmpty()) {
-            return
-        }
-
-        var selectedItem: MidiDevice.Info? = null
-        if (plugin.midiDevice() == null) {
-            selectedItem =
-                plugin.allMidiDevices.find { deviceInfoToString(it) == MidiControlProperties.midiDeviceIdentifier }
-        }
-        if (plugin.midiDevice() != null && selectedItem == null) {
-            selectedItem = plugin.allMidiDevices.find {
-                deviceInfoToString(it) == deviceInfoToString(
-                    plugin.midiDevice()!!.deviceInfo
-                )
-            }
-        }
-
-        if (selectedItem == null) {
-            return
-        }
+        val selectedItem: MidiDeviceClass? = plugin.activeMidiDevice()
+                ?: plugin.allMidiDevices.find { it.id == MidiControlProperties.midiDeviceIdentifier }
+                ?: plugin.allMidiDevices.first { it.device?.maxTransmitters != 0 }
 
         devicesComboBox.selectedItem = selectedItem
     }

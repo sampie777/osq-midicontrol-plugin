@@ -1,9 +1,10 @@
 package nl.sajansen.midicontrol.gui
 
+import nl.sajansen.midicontrol.MidiDeviceClass
+import nl.sajansen.midicontrol.deviceInfoToString
 import themes.Theme
 import java.awt.Component
 import java.awt.Font
-import javax.sound.midi.MidiDevice
 import javax.swing.JLabel
 import javax.swing.JList
 import javax.swing.plaf.basic.BasicComboBoxRenderer
@@ -15,9 +16,15 @@ class DevicesComboboxRenderer : BasicComboBoxRenderer() {
             return cell
         }
 
-        val deviceInfo = value as MidiDevice.Info
-        cell.text = "${deviceInfo.name} (${deviceInfo.description})"
-        cell.font = Font(Theme.get.FONT_FAMILY, Font.PLAIN, 12)
+        val midiDevice = value as MidiDeviceClass
+        cell.text = deviceInfoToString(midiDevice.info)
+
+        if (midiDevice.device?.maxTransmitters == 0) {
+            cell.font = Font(Theme.get.FONT_FAMILY, Font.ITALIC, 11)
+            cell.text = "(not compatible) ${cell.text}"
+        } else {
+            cell.font = Font(Theme.get.FONT_FAMILY, Font.PLAIN, 12)
+        }
         return cell
     }
 }

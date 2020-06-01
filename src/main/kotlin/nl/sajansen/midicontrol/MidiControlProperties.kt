@@ -20,7 +20,6 @@ object MidiControlProperties {
 
     var midiDeviceIdentifier: String = ""
     var midiDeviceDescription: String = ""
-    var commandHistoryMaxLength: Int = 4
 
     val charset = Charsets.ISO_8859_1
     var previousQueItemCommand: String = ""
@@ -37,8 +36,6 @@ object MidiControlProperties {
 
         midiDeviceIdentifier = properties.getProperty("midiDeviceIdentifier", midiDeviceIdentifier)
         midiDeviceDescription = properties.getProperty("midiDeviceDescription", midiDeviceDescription)
-        commandHistoryMaxLength =
-            properties.getProperty("commandHistoryMaxLength", commandHistoryMaxLength.toString()).toInt()
         previousQueItemCommand = configStringToByteArrayString(
             properties.getProperty(
                 "previousQueItemCommand",
@@ -62,7 +59,6 @@ object MidiControlProperties {
 
         properties.setProperty("midiDeviceIdentifier", midiDeviceIdentifier)
         properties.setProperty("midiDeviceDescription", midiDeviceDescription)
-        properties.setProperty("commandHistoryMaxLength", commandHistoryMaxLength.toString())
         properties.setProperty("previousQueItemCommand", byteArrayStringToConfigString(previousQueItemCommand))
         properties.setProperty("nextQueItemCommand", byteArrayStringToConfigString(nextQueItemCommand))
 
