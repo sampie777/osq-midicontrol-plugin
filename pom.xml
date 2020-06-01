@@ -6,7 +6,7 @@
 
     <groupId>nl.sajansen</groupId>
     <artifactId>osq-midicontrol-plugin</artifactId>
-    <version>0.0.0-SNAPSHOT</version>
+    <version>0.1.0</version>
     <packaging>jar</packaging>
 
     <name>OBS MidiControl Plugin</name>
@@ -17,7 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.version>1.3.70</kotlin.version>
         <kotlin.code.style>official</kotlin.code.style>
-        <obs-scene-que.version>2.5.0-SNAPSHOT</obs-scene-que.version>
+        <obs-scene-que.version>2.5.0</obs-scene-que.version>
     </properties>
 
     <dependencies>

@@ -78,7 +78,7 @@ class MidiControlPlugin : DetailPanelBasePlugin {
             e.printStackTrace()
             Notifications.add(
                 "Failed to setup connection with device: ${midiDevice.deviceInfo.name}: ${e.localizedMessage}",
-                "Midi Control plugin"
+                "Midi Control"
             )
             return false
         }
@@ -91,7 +91,7 @@ class MidiControlPlugin : DetailPanelBasePlugin {
             e.printStackTrace()
             Notifications.add(
                 "Failed to connect with device: ${midiDevice.deviceInfo.name}: ${e.localizedMessage}",
-                "Midi Control plugin"
+                "Midi Control"
             )
             return false
         }
@@ -120,7 +120,7 @@ class MidiControlPlugin : DetailPanelBasePlugin {
 
         if (midiDevice == null) {
             logger.info("Midi device '${MidiControlProperties.midiDeviceIdentifier}' not found")
-            Notifications.add("Midi device '${MidiControlProperties.midiDeviceIdentifier}' not found", "Midi Control Plugin")
+            Notifications.add("Midi device '${MidiControlProperties.midiDeviceIdentifier}' not found", "Midi Control")
             return
         }
 

@@ -63,7 +63,7 @@ class MidiConnectionPanel(private val plugin: MidiControlPlugin) : JPanel(), Mid
             val selectedDevice = devicesComboBox.selectedItem
             if (selectedDevice == null) {
                 logger.info("No midi device selected")
-                Notifications.add("First select a Midi device to connect with", "Midi Control Plugin")
+                Notifications.add("First select a Midi device to connect with", "Midi Control")
                 return
             }
 
