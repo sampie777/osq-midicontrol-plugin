@@ -1,4 +1,4 @@
-package nl.sajansen.midicontrol.gui
+package nl.sajansen.midicontrol.gui.detailPanel
 
 import gui.utils.createGraphics
 import nl.sajansen.midicontrol.MidiControlProperties

@@ -1,12 +1,14 @@
-package nl.sajansen.midicontrol
+package nl.sajansen.midicontrol.midi
 
+import nl.sajansen.midicontrol.*
 import objects.que.Que
 import java.util.logging.Logger
 import javax.sound.midi.MidiDevice
 import javax.sound.midi.MidiMessage
 import javax.sound.midi.Receiver
 
-class MidiReceiver(private val plugin: MidiControlPlugin, private val device: MidiDevice) : Receiver, MidiControlRefreshable {
+class MidiReceiver(private val plugin: MidiControlPlugin, private val device: MidiDevice) : Receiver,
+    MidiControlRefreshable {
 
     private val logger = Logger.getLogger(MidiReceiver::class.java.name)
 
@@ -15,7 +17,7 @@ class MidiReceiver(private val plugin: MidiControlPlugin, private val device: Mi
     }
 
     override fun send(message: MidiMessage, timestamp: Long) {
-        val command = String(message.message, MidiControlProperties.charset)
+        val command = byteArrayToByteArrayString(message.message)
         MidiControlRefreshableRegister.onMidiCommandReceived(command)
 
         doCalibration(command)

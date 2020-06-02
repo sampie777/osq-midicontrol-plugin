@@ -1,4 +1,4 @@
-package nl.sajansen.midicontrol.gui
+package nl.sajansen.midicontrol.gui.detailPanel
 
 import nl.sajansen.midicontrol.MidiControlPlugin
 import nl.sajansen.midicontrol.MidiControlRefreshable

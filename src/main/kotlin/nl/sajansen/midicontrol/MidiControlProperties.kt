@@ -75,15 +75,4 @@ object MidiControlProperties {
             )
         }
     }
-
-    fun configStringToByteArrayString(byteText: String): String {
-        if (byteText.isEmpty()) {
-            return ""
-        }
-        return String(byteText.split(",").map { it.toInt().toByte() }.toByteArray(), charset)
-    }
-
-    fun byteArrayStringToConfigString(text: String): String {
-        return text.toByteArray(charset).joinToString(",")
-    }
 }

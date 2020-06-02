@@ -1,6 +1,6 @@
-package nl.sajansen.midicontrol.gui
+package nl.sajansen.midicontrol.gui.detailPanel
 
-import nl.sajansen.midicontrol.MidiDeviceClass
+import nl.sajansen.midicontrol.midi.MidiDeviceClass
 import nl.sajansen.midicontrol.deviceInfoToString
 import themes.Theme
 import java.awt.Component

@@ -1,8 +1,16 @@
 package nl.sajansen.midicontrol
 
-import nl.sajansen.midicontrol.gui.DetailPanel
+import nl.sajansen.midicontrol.gui.detailPanel.DetailPanel
+import nl.sajansen.midicontrol.gui.sourcePanel.SourcePanel
+import nl.sajansen.midicontrol.midi.MidiDeviceClass
+import nl.sajansen.midicontrol.midi.MidiReceiver
+import nl.sajansen.midicontrol.queItems.MidiControlQueItem
 import objects.notifications.Notifications
+import objects.que.JsonQue
+import objects.que.QueItem
 import plugins.common.DetailPanelBasePlugin
+import plugins.common.QueItemBasePlugin
+import java.awt.Color
 import java.net.URL
 import java.util.logging.Logger
 import javax.sound.midi.MidiDevice
@@ -11,7 +19,7 @@ import javax.swing.Icon
 import javax.swing.ImageIcon
 import javax.swing.JComponent
 
-class MidiControlPlugin : DetailPanelBasePlugin {
+class MidiControlPlugin : DetailPanelBasePlugin, QueItemBasePlugin {
     private val logger = Logger.getLogger(MidiControlPlugin::class.java.name)
 
     override val name = "MidiControlPlugin"
@@ -20,6 +28,8 @@ class MidiControlPlugin : DetailPanelBasePlugin {
     override val icon: Icon? = createImageIcon("/nl/sajansen/midicontrol/icon-14.png")
 
     override val tabName = "Midi"
+
+    internal val quickAccessColor = Color(255, 239, 230)
 
     var isMidiControlOn: Boolean = true
     var allMidiDevices = ArrayList<MidiDeviceClass>()
@@ -30,17 +40,33 @@ class MidiControlPlugin : DetailPanelBasePlugin {
     var calibratingNextCommand: Boolean = false
 
     override fun enable() {
-        super.enable()
+        super<DetailPanelBasePlugin>.enable()
+        super<QueItemBasePlugin>.enable()
+
         MidiControlProperties.writeToFile = true
         MidiControlProperties.load()
         getAllMidiDevicesClasses()
     }
 
     override fun disable() {
-        super.disable()
+        super<DetailPanelBasePlugin>.disable()
+        super<QueItemBasePlugin>.disable()
+
         disconnectMidiDevice()
         MidiControlProperties.save()
         MidiControlProperties.writeToFile = false
+    }
+
+    override fun sourcePanel(): JComponent {
+        return SourcePanel(this)
+    }
+
+    override fun configStringToQueItem(value: String): QueItem {
+        throw NotImplementedError("This method is deprecated")
+    }
+
+    override fun jsonToQueItem(jsonQueItem: JsonQue.QueItem): QueItem {
+        return MidiControlQueItem.fromJson(this, jsonQueItem)
     }
 
     override fun detailPanel(): JComponent {
@@ -67,7 +93,8 @@ class MidiControlPlugin : DetailPanelBasePlugin {
                 transmitter.receiver = MidiReceiver(this, midiDevice)
             }
 
-            midiDevice.transmitter.receiver = MidiReceiver(this, midiDevice)
+            midiDevice.transmitter.receiver =
+                MidiReceiver(this, midiDevice)
         } catch (e: Exception) {
             logger.warning("Failed to set transmitters")
             e.printStackTrace()

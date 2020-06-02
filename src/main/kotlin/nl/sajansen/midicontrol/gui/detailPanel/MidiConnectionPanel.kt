@@ -1,13 +1,13 @@
-package nl.sajansen.midicontrol.gui
+package nl.sajansen.midicontrol.gui.detailPanel
 
 import nl.sajansen.midicontrol.*
+import nl.sajansen.midicontrol.midi.MidiDeviceClass
 import objects.notifications.Notifications
 import themes.Theme
 import java.awt.BorderLayout
 import java.awt.Component
 import java.awt.Dimension
 import java.util.logging.Logger
-import javax.sound.midi.MidiDevice
 import javax.swing.*
 
 class MidiConnectionPanel(private val plugin: MidiControlPlugin) : JPanel(), MidiControlRefreshable {
@@ -40,7 +40,8 @@ class MidiConnectionPanel(private val plugin: MidiControlPlugin) : JPanel(), Mid
     }
 
     private fun refreshDevicesComboBox() {
-        devicesComboBox.model = MidiDevicesComboBoxModel(plugin.allMidiDevices.toTypedArray())
+        devicesComboBox.model =
+            MidiDevicesComboBoxModel(plugin.allMidiDevices.toTypedArray())
     }
 
     private fun refreshConnectButtonText() {
