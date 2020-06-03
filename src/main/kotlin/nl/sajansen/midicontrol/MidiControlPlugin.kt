@@ -88,13 +88,7 @@ class MidiControlPlugin : DetailPanelBasePlugin, QueItemBasePlugin {
 
         // Register receiver for transmitters
         try {
-            midiDevice.transmitters.forEach { transmitter ->
-                logger.info("Creating midi receiver for transmitter: $transmitter")
-                transmitter.receiver = MidiReceiver(this, midiDevice)
-            }
-
-            midiDevice.transmitter.receiver =
-                MidiReceiver(this, midiDevice)
+            midiDevice.transmitter.receiver = MidiReceiver(this, midiDevice)
         } catch (e: Exception) {
             logger.warning("Failed to set transmitters")
             e.printStackTrace()
