@@ -58,13 +58,7 @@ class MidiReceiver(private val plugin: MidiControlPlugin, private val device: Mi
     }
 
     override fun close() {
-        logger.info("Closing Midi connection")
-        try {
-            device.close()
-        } catch (e: Exception) {
-            logger.info("Exception occurred during closing of midi device")
-            e.printStackTrace()
-        }
+        device.transmitters.find { it.receiver == this }?.close()
     }
 
     override fun onMidiDeviceDisconnected() {

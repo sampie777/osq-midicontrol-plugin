@@ -34,6 +34,7 @@ class MidiControlPlugin : DetailPanelBasePlugin, QueItemBasePlugin {
     var isMidiControlOn: Boolean = true
     var allMidiDevices = ArrayList<MidiDeviceClass>()
     private var activeMidiDeviceClass: MidiDeviceClass? = null
+    private var midiReceiver: MidiReceiver? = null
     fun activeMidiDevice() = activeMidiDeviceClass
 
     var calibratingPreviousCommand: Boolean = false
@@ -86,9 +87,10 @@ class MidiControlPlugin : DetailPanelBasePlugin, QueItemBasePlugin {
     private fun connectToMidiDevice(midiDevice: MidiDevice): Boolean {
         logger.info("Setting up connection with MidiDevice: ${midiDevice.deviceInfo.name}")
 
-        // Register receiver for transmitters
+        // Register receiver for transmitter
         try {
-            midiDevice.transmitter.receiver = MidiReceiver(this, midiDevice)
+            midiReceiver = MidiReceiver(this, midiDevice)
+            midiDevice.transmitter.receiver = midiReceiver
         } catch (e: Exception) {
             logger.warning("Failed to set transmitters")
             e.printStackTrace()
@@ -101,7 +103,9 @@ class MidiControlPlugin : DetailPanelBasePlugin, QueItemBasePlugin {
 
         // Open connection with device
         try {
-            midiDevice.open()
+            if (!midiDevice.isOpen) {
+                midiDevice.open()
+            }
         } catch (e: Exception) {
             logger.severe("Failed to open device: ${midiDevice.deviceInfo.name}")
             e.printStackTrace()
@@ -127,7 +131,16 @@ class MidiControlPlugin : DetailPanelBasePlugin, QueItemBasePlugin {
     }
 
     fun disconnectMidiDevice() {
-        activeMidiDeviceClass?.device?.close()
+        logger.info("Closing Midi connection")
+        try {
+            midiReceiver?.close()
+            if (activeMidiDeviceClass?.device?.transmitters?.isEmpty()!!) {
+                activeMidiDeviceClass?.device?.close()
+            }
+        } catch (e: Exception) {
+            logger.info("Exception occurred during closing of midi device")
+            e.printStackTrace()
+        }
         MidiControlRefreshableRegister.onMidiDeviceDisconnected()
     }
 
