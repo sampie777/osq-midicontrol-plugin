@@ -6,7 +6,7 @@ import nl.sajansen.midicontrol.midi.MidiDeviceClass
 import nl.sajansen.midicontrol.midi.MidiReceiver
 import nl.sajansen.midicontrol.queItems.MidiControlQueItem
 import objects.notifications.Notifications
-import objects.que.JsonQue
+import objects.que.JsonQueue
 import objects.que.QueItem
 import plugins.common.DetailPanelBasePlugin
 import plugins.common.QueItemBasePlugin
@@ -66,7 +66,7 @@ class MidiControlPlugin : DetailPanelBasePlugin, QueItemBasePlugin {
         throw NotImplementedError("This method is deprecated")
     }
 
-    override fun jsonToQueItem(jsonQueItem: JsonQue.QueItem): QueItem {
+    override fun jsonToQueItem(jsonQueItem: JsonQueue.QueueItem): QueItem {
         return MidiControlQueItem.fromJson(this, jsonQueItem)
     }
 
@@ -134,7 +134,7 @@ class MidiControlPlugin : DetailPanelBasePlugin, QueItemBasePlugin {
         logger.info("Closing Midi connection")
         try {
             midiReceiver?.close()
-            if (activeMidiDeviceClass?.device?.transmitters?.isEmpty()!!) {
+            if (activeMidiDeviceClass?.device != null && activeMidiDeviceClass?.device?.transmitters?.isEmpty()!!) {
                 activeMidiDeviceClass?.device?.close()
             }
         } catch (e: Exception) {

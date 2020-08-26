@@ -3,7 +3,7 @@ package nl.sajansen.midicontrol.queItems
 import nl.sajansen.midicontrol.*
 import nl.sajansen.midicontrol.midi.ByteMidiMessage
 import objects.notifications.Notifications
-import objects.que.JsonQue
+import objects.que.JsonQueue
 import objects.que.QueItem
 import java.awt.Color
 import java.util.logging.Logger
@@ -22,7 +22,7 @@ class MidiControlQueItem(
     override var quickAccessColor: Color? = plugin.quickAccessColor
 
     companion object {
-        fun fromJson(plugin: MidiControlPlugin, jsonQueItem: JsonQue.QueItem): MidiControlQueItem {
+        fun fromJson(plugin: MidiControlPlugin, jsonQueItem: JsonQueue.QueueItem): MidiControlQueItem {
             val messages: List<MidiMessage> = jsonQueItem.data["commands"]!!.split(";")
                 .map { stringCommands ->
                     val byteArrayCommands = configStringToByteArray(stringCommands)
@@ -51,7 +51,7 @@ class MidiControlQueItem(
         throw NotImplementedError("This method is deprecated")
     }
 
-    override fun toJson(): JsonQue.QueItem {
+    override fun toJson(): JsonQueue.QueueItem {
         val jsonItem = super.toJson()
         jsonItem.data["commands"] = messages
             .map {
