@@ -2,8 +2,6 @@
 
 For OBS Scene Queue
 
-_By Samuel-Anton Jansen_
-
 ### How to use
 
 **Installation**
